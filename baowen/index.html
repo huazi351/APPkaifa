@@ -1,0 +1,1820 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#059669"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="小树屋AI写文"/>
+<meta name="description" content="小树屋AI - 全网热点爆文智能生成平台"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23059669'/%3E%3Cpath d='M16 4L4 15h3v11h6v-7h6v7h6v-11h3L16 4z' fill='%23fff'/%3E%3C/svg%3E"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<title>小树屋AI - 智能写文</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#fafaf9;color:#1a1a1a;height:100vh;overflow:hidden}
+.app{display:flex;height:100vh}
+.sidebar{width:180px;background:#fff;border-right:1px solid #e5e5e5;flex-shrink:0;display:flex;flex-direction:column}
+.sidebar-header{padding:16px 14px;border-bottom:1px solid #e5e5e5}
+.sidebar-header h1{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.sidebar-header p{font-size:11px;color:#9ca3af;margin-top:2px}
+.nav{flex:1;padding:12px}
+.nav-item{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;color:#4b5563;transition:all .2s;margin-bottom:2px;line-height:1.4}
+.nav-item:hover{background:#f3f4f6}
+.nav-item.active{font-weight:600;border:1px solid;background:#d1fae5;color:#065f46;border-color:#6ee7b7}
+.sidebar-footer{padding:12px 16px;border-top:1px solid #e5e5e5;font-size:10px;color:#9ca3af;text-align:center}
+.main{flex:1;overflow-y:auto;padding:24px 32px}
+.page{display:none}
+.page.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card{background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:20px;margin-bottom:16px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:opacity .2s}
+.btn-primary{color:#fff}
+.btn-secondary{background:#f3f4f6;color:#374151;border:1px solid #d1d5db}
+.btn-secondary:hover{background:#e5e7eb}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;font-weight:500;color:#374151;margin-bottom:4px;display:block}
+.form-input,.form-textarea,.form-select{width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;font-family:inherit;outline:none}
+.form-textarea{min-height:120px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500}
+.badge-green{background:#dcfce7;color:#166534;border:1px solid #86efac}
+.badge-red{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+.badge-yellow{background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
+.output-area{background:#fff;border:1px solid #e5e5e5;border-radius:8px;padding:20px;font-size:14px;line-height:1.8;max-height:500px;overflow-y:auto;margin-top:12px}
+.status-bar{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12px}
+.spinner{width:14px;height:14px;border:2px solid #e5e7eb;border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;top:16px;right:16px;background:#fff;border:1px solid #e5e5e5;border-radius:8px;padding:12px 16px;box-shadow:0 4px 12px rgba(0,0,0,.1);font-size:13px;z-index:1000;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.hot-section{background:linear-gradient(135deg,#f0fdf4 0%,#ecfdf5 100%);border:1px solid #a7f3d0;border-radius:10px;padding:16px;margin-bottom:16px}
+.hot-title{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#065f46;margin-bottom:10px}
+.hot-tag{display:inline-flex;align-items:center;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;background:#f0fdf4;color:#065f46;border:1px solid #a7f3d0;cursor:pointer;transition:all .2s;margin:0 6px 6px 0}
+.hot-tag:hover{background:#d1fae5;border-color:#34d399;transform:translateY(-1px)}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;padding:12px;background:#fafaf9;border-radius:8px;border:1px solid #e5e5e5}
+.btn-group-title{font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;width:100%}
+.save-details{position:relative;display:inline-block}
+.save-details summary{list-style:none;cursor:pointer}
+.save-details summary::-webkit-details-marker{display:none}
+.save-options{position:absolute;bottom:calc(100% + 4px);left:0;background:#fff;border:1px solid #e5e5e5;border-radius:8px;padding:4px;box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:100;min-width:160px}
+.save-options button{display:block;width:100%;text-align:left;padding:8px 12px;border:none;background:none;cursor:pointer;font-size:13px;border-radius:4px;white-space:nowrap}
+.save-options button:hover{background:#f3f4f6}
+.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dashboard-card{padding:24px;border-radius:10px;cursor:pointer;transition:box-shadow .2s;border:1px solid}
+.dashboard-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.dashboard-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.output-area h1{font-size:20px;font-weight:700;margin:16px 0 12px;border-bottom:2px solid;padding-bottom:8px}
+.output-area h2{font-size:16px;font-weight:600;margin:14px 0 10px;color:#374151}
+.output-area blockquote{border-left:3px solid;margin:10px 0;padding:8px 16px;background:#fafaf9;color:#4b5563}
+.output-area hr{border:none;border-top:1px solid #e5e5e5;margin:12px 0}
+@media (max-width:768px){.app{flex-direction:column;height:100vh}.sidebar{width:100%;height:auto;flex-direction:row;align-items:center;padding:0 8px;border-right:none;border-bottom:1px solid #e5e5e5}.sidebar-header{padding:6px 10px;border-bottom:none;border-right:1px solid #e5e5e5}.sidebar-header h1{font-size:14px}.sidebar-header p{display:none}.nav{flex:1;display:flex;flex-direction:row;padding:4px;gap:2px;overflow-x:auto}.nav-item{padding:5px 8px;font-size:11px;margin-bottom:0;white-space:nowrap;gap:5px}.nav-icon{flex-shrink:0;opacity:.6;vertical-align:middle}.nav-item svg{stroke-width:1.5}.sidebar-footer{display:none}.main{padding:12px 16px;padding-bottom:80px}.form-row{grid-template-columns:1fr}.output-area{max-height:400px}}.share-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding:10px;background:#f0fdf4;border-radius:8px;border:1px solid #a7f3d0}.share-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid #d1d5db;background:#fff;color:#374151;transition:all .2s}.share-btn:hover{background:#d1fae5;border-color:#34d399;color:#065f46}.share-btn-toutiao:hover{background:#fef3c7;border-color:#fbbf24}.share-btn-baijiahao:hover{background:#fee2e2;border-color:#fca5a5}.share-btn-weixin:hover{background:#dcfce7;border-color:#86efac}.share-btn-zhihu:hover{background:#eff6ff;border-color:#93c5fd}.share-btn-douyin:hover{background:#fce7f3;border-color:#f9a8d4}.share-btn-xiaohongshu:hover{background:#fce7f3;border-color:#f9a8d4}.share-btn-qihoo:hover{background:#e0f2fe;border-color:#7dd3fc}.images-block{margin:16px 0;padding:12px;background:#fafaf9;border-radius:8px;border:1px solid #e5e5e5}.images-block-title{font-size:12px;font-weight:600;color:#6b7280;margin-bottom:6px}.imgs-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}.img-card{text-align:center}.img-card img{width:100%;border-radius:6px;border:1px solid #e5e5e5;aspect-ratio:16/9;object-fit:cover}.img-card p{font-size:10px;color:#9ca3af;margin-top:4px;word-break:break-all}.img-card .img-credit{font-size:9px;color:#d1d5db}.hot-refresh-btn{font-size:11px;padding:3px 8px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:4px;cursor:pointer;white-space:nowrap}.hot-refresh-btn:hover{background:#fed7aa}@media (max-width:768px){.imgs-row{grid-template-columns:1fr}}</style>
+</head>
+<body>
+
+<!-- 登录/注册层 -->
+<div id="login-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(135deg,#fafaf9 0%,#f5f5f4 100%);z-index:10000;display:none;align-items:center;justify-content:center">
+  <div style="background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:40px;width:380px;max-width:90vw;box-shadow:0 4px 20px rgba(0,0,0,.06)">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:20px;font-weight:700;color:#92400e;margin-bottom:4px">小树屋AI</div>
+      <div style="font-size:12px;color:#9ca3af">智能内容生产平台</div>
+    </div>
+    <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:10px;margin-bottom:16px;font-size:12px;color:#92400e;text-align:center">
+      🎁 新用户注册即送<strong>3天</strong>免费试用<br/>
+      <span style="font-size:11px">分享好友注册，双方各再得3天</span>
+    </div>
+    <div id="login-tabs" style="display:flex;margin-bottom:16px;border-bottom:1px solid #e5e5e5">
+      <button id="tab-login" onclick="switchTab(&#39;login&#39;)" style="flex:1;padding:8px;border:none;background:none;cursor:pointer;font-size:13px;border-bottom:2px solid #d97706;color:#92400e;font-weight:600">登录</button>
+      <button id="tab-register" onclick="switchTab(&#39;register&#39;)" style="flex:1;padding:8px;border:none;background:none;cursor:pointer;font-size:13px;border-bottom:2px solid transparent;color:#6b7280">注册</button>
+    </div>
+    <div id="login-form">
+      <div style="margin-bottom:12px">
+        <input id="login-username" placeholder="用户名" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;outline:none"/>
+      </div>
+      <div style="margin-bottom:16px">
+        <input id="login-password" type="password" placeholder="密码" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;outline:none"/>
+      </div>
+      <button onclick="doLogin()" style="width:100%;padding:10px;background:#d97706;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:10px">登录</button>
+    </div>
+    <div id="register-form" style="display:none">
+      <div style="margin-bottom:12px">
+        <input id="reg-username" placeholder="用户名（3-20位字母数字）" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;outline:none"/>
+      </div>
+      <div style="margin-bottom:12px">
+        <input id="reg-password" type="password" placeholder="密码（至少6位）" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;outline:none"/>
+      </div>
+      <div style="margin-bottom:16px">
+        <input id="reg-invite" placeholder="邀请码（选填，填写双方各+3天）" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;outline:none"/>
+      </div>
+      <button onclick="doRegister()" style="width:100%;padding:10px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:10px">注册并领取3天试用</button>
+    </div>
+    <div id="login-msg" style="font-size:12px;color:#dc2626;text-align:center;min-height:18px"></div>
+  </div>
+</div>
+
+<!-- 授权购买层 -->
+<div id="auth-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(135deg,#fafaf9 0%,#f5f5f4 100%);z-index:10000;display:none;align-items:center;justify-content:center">
+  <div style="background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:40px;width:380px;max-width:90vw;box-shadow:0 4px 20px rgba(0,0,0,.06)">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:20px;font-weight:700;color:#92400e;margin-bottom:4px">小树屋AI</div>
+      <div id="user-status" style="font-size:12px;color:#dc2626;margin-top:4px"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+      <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:12px;text-align:center;cursor:pointer" onclick="selectPlan(&#39;month&#39;)">
+        <div style="font-size:11px;color:#92400e">月卡</div>
+        <div style="font-size:18px;font-weight:700;color:#92400e">¥5</div>
+        <div style="font-size:10px;color:#9ca3af">30天</div>
+      </div>
+      <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:12px;text-align:center;cursor:pointer" onclick="selectPlan(&#39;quarter&#39;)">
+        <div style="font-size:11px;color:#92400e">季卡</div>
+        <div style="font-size:18px;font-weight:700;color:#92400e">¥12</div>
+        <div style="font-size:10px;color:#9ca3af">90天</div>
+      </div>
+      <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:12px;text-align:center;cursor:pointer" onclick="selectPlan(&#39;year&#39;)">
+        <div style="font-size:11px;color:#92400e">年卡</div>
+        <div style="font-size:18px;font-weight:700;color:#92400e">¥18</div>
+        <div style="font-size:10px;color:#9ca3af">365天</div>
+      </div>
+      <div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;padding:12px;text-align:center;cursor:pointer" onclick="selectPlan(&#39;forever&#39;)">
+        <div style="font-size:11px;color:#065f46">永久卡</div>
+        <div style="font-size:18px;font-weight:700;color:#065f46">¥68</div>
+        <div style="font-size:10px;color:#9ca3af">永久使用</div>
+      </div>
+    </div>
+    <div style="margin-bottom:16px">
+      <input id="authCode" type="text" placeholder="输入授权码激活" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;outline:none;text-transform:uppercase" onkeyup="if(event.key===&#39;Enter&#39;)doActivate()"/>
+    </div>
+    <button onclick="doActivate()" style="width:100%;padding:10px;background:#d97706;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:10px">激活授权码</button>
+    <div id="auth-msg" style="font-size:12px;text-align:center;min-height:18px"></div>
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid #e5e5e5">
+      <div style="font-size:11px;color:#6b7280;text-align:center;margin-bottom:8px">
+        📤 分享好友注册，双方各得3天免费试用
+      </div>
+      <div style="display:flex;gap:8px">
+        <input id="share-link" readonly="" style="flex:1;padding:6px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:11px;background:#fafaf9;color:#6b7280" value=""/>
+        <button onclick="copyShareLink()" style="padding:6px 12px;background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;font-size:11px">复制</button>
+      </div>
+    </div>
+    <div style="margin-top:12px;text-align:center">
+      <button onclick="logoutUser()" style="font-size:11px;color:#9ca3af;background:none;border:none;cursor:pointer">切换账号</button>
+    </div>
+  </div>
+</div>
+<div class="app" id="app-main" style="display:none">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1 style="color:#059669"><svg width="24" height="24" viewBox="0 0 24 24" style="flex-shrink:0"><rect width="24" height="24" rx="5" fill="#059669"/><path d="M12 2L3 11h2v9h5v-5h4v5h5V11h2L12 2z" fill="#fff"/></svg>小树屋AI</h1>
+      <p>智能写文平台</p>
+    </div>
+    <nav class="nav">
+      <div class="nav-item active" data-page="dashboard" onclick="showPage(&#39;dashboard&#39;)">
+        <svg class="nav-icon" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:middle" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>工作台
+      </div>
+      <div class="nav-item" data-page="article" onclick="showPage(&#39;article&#39;)">
+        <svg class="nav-icon" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:middle" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>写文生成
+      </div>
+      <div class="nav-item" data-page="settings" onclick="showPage(&#39;settings&#39;)">
+        <svg class="nav-icon" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:middle" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.17 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.58 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.17a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.42 9z"></path></svg>设置
+      </div>
+      <div class="nav-item" data-page="profile" onclick="showPage(&#39;profile&#39;);renderProfile()">
+        <svg class="nav-icon" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:middle" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>我的
+      </div>
+    </nav>
+    <div class="sidebar-footer">小树屋AI v2.0</div>
+  </aside>
+
+  <main class="main">
+    <!-- 工作台 -->
+    <div class="page active" id="page-dashboard">
+      <div style="text-align:center;padding:40px 0">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:#dcfce7;color:#166534;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid #86efac;margin-bottom:16px">小树屋AI 智能写文平台</div>
+        <h1 style="font-size:22px;font-weight:700;margin-bottom:8px">全网热点爆文一键生成</h1>
+        <p style="color:#6b7280;font-size:13px">10个热点自动推荐 → AI排版完成 → 直接复制发布</p>
+      </div>
+      <div class="dashboard-grid">
+        <div class="dashboard-card" onclick="showPage(&#39;article&#39;)" style="border-color:#86efac;background:#f0fdf4">
+          <div class="dashboard-icon" style="background:#dcfce7">📝</div>
+          <h2>开始写文</h2>
+          <p>选择热点话题 → 选择平台风格<br/>一键生成排版完成的爆文</p>
+        </div>
+        <div class="dashboard-card" style="opacity:0.6;border-color:#86efac;background:#f0fdf4">
+          <div class="dashboard-icon" style="background:#dcfce7">📖</div>
+          <h2>使用说明</h2>
+          <p>1. 点击热点标签或手动输入话题<br/>2. 选择发布平台和字数<br/>3. 点击生成，直接复制发布</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 写文生成 -->
+    <div class="page" id="page-article">
+      <h1 style="font-size:18px;font-weight:700;margin-bottom:16px">📝 爆文生成器</h1>
+      <div class="hot-section">
+        <div class="hot-title" style="flex-wrap:wrap">
+          <span>🔥 近三天全网最爆热点</span>
+          <div style="display:flex;align-items:center;margin-left:auto;gap:6px">
+            <select id="hotCount" onchange="refreshHotTopics()" style="padding:2px 6px;border:1px solid #a7f3d0;border-radius:4px;font-size:11px;background:#fff;color:#065f46;cursor:pointer;outline:none">
+              <option value="8">8个</option>
+              <option value="10" selected="">10个</option>
+              <option value="12">12个</option>
+              <option value="15">15个</option>
+            </select>
+            <button onclick="refreshHotTopics()" style="font-size:11px;padding:3px 10px;background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;border-radius:4px;cursor:pointer">🔄 换一批</button>
+            <span style="font-size:10px;color:#9ca3af">每日更新</span>
+          </div>
+        </div>
+        <div id="hot-topics-article"></div>
+      </div>
+      <div class="card">
+        <div class="form-group"><label class="form-label">热点话题</label><input class="form-input" id="articleTopic" placeholder="输入热点话题，或点击上方推荐..."/></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">适配平台</label><select class="form-select" id="articlePlatform"><option>今日头条/百家号</option><option>微信公众号</option><option>知乎</option><option>抖音图文</option><option>小红书</option></select></div>
+          <div class="form-group">
+            <label class="form-label">目标字数</label>
+            <div class="form-row" style="grid-template-columns:1fr 1fr">
+              <select class="form-select" id="articleWords" onchange="toggleCustomWords()">
+                <option value="1500">1500字</option>
+                <option value="2000">2000字</option>
+                <option value="2500" selected="">2500字</option>
+                <option value="3000">3000字</option>
+                <option value="4000">4000字</option>
+                <option value="5000">5000字</option>
+                <option value="custom">自定义</option>
+              </select>
+              <input class="form-input" id="customWords" type="number" placeholder="输入字数" style="display:none" min="500" max="10000" step="100" value="2500"/>
+            </div>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">风格偏好</label><select class="form-select" id="articleStyle"><option value="">默认（口语化、情绪共鸣、观点鲜明）</option><option value="犀利点评">犀利点评型</option><option value="深度分析">深度分析型</option><option value="故事叙述">故事叙述型</option><option value="轻松幽默">轻松幽默型</option><option value="专业权威">专业权威型</option></select></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">发布模式</label><select class="form-select" id="publishMode"><option value="review">检查后我手动发布</option><option value="auto">帮我直接发布到平台</option></select></div>
+          <div class="form-group"><label class="form-label">目标发布平台</label><select class="form-select" id="publishTarget"><option value="">仅生成不发布</option><option value="toutiao">今日头条</option><option value="baijiahao">百家号</option><option value="weixin">公众号</option><option value="zhihu">知乎</option><option value="douyin">抖音图文</option><option value="xiaohongshu">小红书</option><option value="qihoo">企鹅号</option></select></div>
+        </div>
+        <button class="btn btn-primary" id="btn-article" onclick="runArticle()" style="background:#059669">▶ 一键生成爆文</button>
+      </div>
+      <div class="card" id="result-card-article" style="display:none">
+        <div class="status-bar" id="status-bar-article"></div>
+        <div class="output-area" id="output-article"></div>
+        <div class="images-block" id="images-block-article" style="display:none">
+          <div class="images-block-title">🖼️ 文章配图（无版权，可放心使用）</div>
+          <div class="imgs-row" id="imgs-row-article"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+          <button class="btn btn-secondary" onclick="copyOutput(&#39;article&#39;)">📋 复制</button>
+          <details class="save-details" id="save-details-article">
+            <summary class="btn btn-secondary" style="list-style:none;cursor:pointer">💾 保存</summary>
+            <div class="save-options">
+              <button onclick="saveAndClose(&#39;article&#39;,&#39;doc&#39;)">📝 Word文档 (.doc)</button>
+              <button onclick="saveAndClose(&#39;article&#39;,&#39;md&#39;)">📄 Markdown (.md)</button>
+              <button onclick="saveAndClose(&#39;article&#39;,&#39;txt&#39;)">📃 纯文本 (.txt)</button>
+            </div>
+          </details>
+        </div>
+        <div class="share-row" id="share-row-article">
+          <span style="font-size:11px;font-weight:600;color:#065f46;width:100%">📤 一键分享到平台（自动复制格式含图片，打开后Ctrl+V粘贴）</span>
+          <button class="share-btn share-btn-toutiao" onclick="shareDirect(&#39;toutiao&#39;)">📱 今日头条</button>
+          <button class="share-btn share-btn-baijiahao" onclick="shareDirect(&#39;baijiahao&#39;)">📱 百家号</button>
+          <button class="share-btn share-btn-weixin" onclick="shareDirect(&#39;weixin&#39;)">📱 公众号</button>
+          <button class="share-btn share-btn-zhihu" onclick="shareDirect(&#39;zhihu&#39;)">📱 知乎</button>
+          <button class="share-btn share-btn-douyin" onclick="shareDirect(&#39;douyin&#39;)">📱 抖音图文</button>
+          <button class="share-btn share-btn-xiaohongshu" onclick="shareDirect(&#39;xiaohongshu&#39;)">📱 小红书</button>
+          <button class="share-btn share-btn-qihoo" onclick="shareDirect(&#39;qihoo&#39;)">📱 企鹅号</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 设置 -->
+    <div class="page" id="page-settings">
+      <h1 style="font-size:18px;font-weight:700;margin-bottom:16px">⚙️ 系统设置</h1>
+      <div class="card">
+        <div class="form-group"><label class="form-label">API 提供商</label><select class="form-select" id="provider" onchange="onProviderChange()"><option value="">-- 请选择 --</option><option value="ollama">OLLAMA（本地/自架）</option><option value="openai">OpenAI</option><option value="qwen">通义千问</option><option value="deepseek">DeepSeek</option><option value="custom">其他（自定义）</option></select></div>
+        <div class="form-group"><label class="form-label">API 地址</label><input class="form-input" id="ollamaUrl" placeholder="如：https://xxx.trycloudflare.com/api/v1"/></div>
+        <div style="font-size:11px;color:#6b7280;margin:-6px 0 10px;padding:8px;background:#fafaf9;border-radius:6px">
+          <div style="font-weight:600;margin-bottom:4px">📋 常见地址示例：</div>
+          <div>• Ollama本地：http://localhost:11434</div>
+          <div>• 火山引擎/豆包：https://ark.cn-beijing.volces.com/api/v3</div>
+          <div>• 通义千问：https://dashscope.aliyuncs.com/compatible-mode/v1</div>
+          <div>• DeepSeek：https://api.deepseek.com/v1</div>
+          <div>• OpenAI：https://api.openai.com/v1</div>
+        </div>
+        <div class="form-group"><label class="form-label">API Key</label><input class="form-input" id="apiKey" type="password" placeholder="Bearer Token（Ollama本地可留空）"/></div>
+        <div style="font-size:11px;color:#6b7280;margin:-6px 0 10px">Ollama本地部署时，API Key可以留空不填</div>
+        <div class="form-group"><label class="form-label">主模型</label><input class="form-input" id="ollamaModelManual" placeholder="如：qwen3:14b"/><select class="form-select" id="ollamaModel" style="margin-top:6px" onchange="document.getElementById(&#39;ollamaModelManual&#39;).value=this.value"><option value="">-- 先点测试连接获取列表 --</option></select></div>
+        <div class="form-group"><label class="form-label">爆文温度</label><input class="form-input" id="tempArticle" type="number" min="0" max="1" step="0.1" value="0.7"/></div>
+        <div style="display:flex;gap:8px;align-items:center"><button class="btn btn-secondary" onclick="testConnection(&#39;fhmc-bw-&#39;)">🔌 测试连接</button><span id="test-result"></span></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="saveSettings(&#39;fhmc-bw-&#39;, [{id:&#39;tempArticle&#39;,default:&#39;0.7&#39;}])" style="background:#059669">💾 保存</button>
+        <button class="btn btn-secondary" onclick="resetSettings(&#39;fhmc-bw-&#39;, [{id:&#39;tempArticle&#39;,default:&#39;0.7&#39;}])">🔄 重置</button>
+      </div>
+    </div>
+
+    <!-- 我的 -->
+    <div class="page" id="page-profile">
+      <h1 style="font-size:18px;font-weight:700;margin-bottom:16px">👤 我的</h1>
+      <div class="card" style="text-align:center">
+        <div style="width:56px;height:56px;border-radius:50%;background:#059669;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;margin-bottom:8px" id="profile-avatar">?</div>
+        <div style="font-size:18px;font-weight:700" id="profile-username">未登录</div>
+        <div style="margin-top:4px" id="profile-status"><span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:12px;color:#9ca3af;background:#f3f4f6">-</span></div>
+        <div style="margin-top:6px;font-size:13px;color:#6b7280" id="profile-days">-</div>
+      </div>
+      <div class="card" style="background:#fef3c7;border-color:#fcd34d">
+        <div style="font-size:13px;font-weight:600;color:#92400e;margin-bottom:8px">📤 我的邀请码</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div id="profile-invite" style="font-family:monospace;font-size:20px;font-weight:700;color:#92400e;flex:1;background:#fff;padding:4px 12px;border-radius:6px;border:1px solid #fcd34d;letter-spacing:2px;text-align:center">----</div>
+          <button onclick="copyInviteCode()" style="padding:8px 16px;background:#d97706;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap">📋 复制</button>
+        </div>
+        <div style="font-size:11px;color:#92400e">好友注册时填写此码，双方各得3天</div>
+      </div>
+      <div class="card" id="invite-section" style="display:none">
+        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:8px">🎁 填写好友邀请码</div>
+        <div style="display:flex;gap:8px">
+          <input class="form-input" id="profile-invite-input" placeholder="输入好友邀请码" style="flex:1;text-transform:uppercase"/>
+          <button class="btn btn-primary" onclick="submitInviteCode()" style="background:#059669;white-space:nowrap">✅ 提交</button>
+        </div>
+        <div id="profile-invite-msg" style="margin-top:6px;font-size:12px"></div>
+      </div>
+      <!-- 授权码激活 -->
+      <div class="card" style="background:#f0fdf4;border-color:#86efac">
+        <div style="font-size:13px;font-weight:600;color:#065f46;margin-bottom:8px">🔑 授权码激活</div>
+        <div style="display:flex;gap:8px">
+          <input class="form-input" id="profile-auth-code" placeholder="输入授权码，如 30-ABCD-1234" style="flex:1;text-transform:uppercase"/>
+          <button class="btn btn-primary" onclick="activateFromProfile()" style="background:#059669;white-space:nowrap">⚡ 激活</button>
+        </div>
+        <div id="profile-auth-msg" style="margin-top:6px;font-size:12px"></div>
+      </div>
+      <!-- 授权码购买 -->
+      <div class="card" style="background:#fffbeb;border-color:#fcd34d">
+        <div style="font-size:13px;font-weight:600;color:#92400e;margin-bottom:8px">🛒 授权码购买</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;font-size:12px">
+          <div style="padding:6px 8px;background:#fef3c7;border-radius:6px;text-align:center"><div style="font-weight:600;color:#92400e">月卡</div><div style="color:#6b7280">30天 / 5元</div></div>
+          <div style="padding:6px 8px;background:#fef3c7;border-radius:6px;text-align:center"><div style="font-weight:600;color:#92400e">季卡</div><div style="color:#6b7280">90天 / 12元</div></div>
+          <div style="padding:6px 8px;background:#fef3c7;border-radius:6px;text-align:center"><div style="font-weight:600;color:#92400e">年卡</div><div style="color:#6b7280">365天 / 18元</div></div>
+          <div style="padding:6px 8px;background:#fef3c7;border-radius:6px;text-align:center"><div style="font-weight:600;color:#92400e">永久卡</div><div style="color:#6b7280">永久 / 68元</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fef3c7;border-radius:8px">
+          <div style="font-size:20px">💬</div>
+          <div>
+            <div style="font-size:12px;color:#6b7280">购买请加QQ号</div>
+            <div style="font-size:16px;font-weight:700;color:#92400e;font-family:monospace">3104880265</div>
+          </div>
+          <button onclick="copyQQ()" style="margin-left:auto;padding:6px 12px;background:#d97706;color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer">📋 复制</button>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:8px">🔐 修改密码</div>
+        <div class="form-group"><input class="form-input" id="pwd-old" type="password" placeholder="当前密码"/></div>
+        <div class="form-group"><input class="form-input" id="pwd-new" type="password" placeholder="新密码"/></div>
+        <button class="btn btn-secondary" onclick="changePassword()" style="width:100%">🔑 修改密码</button>
+        <div id="pwd-msg" style="margin-top:6px;font-size:12px"></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="showPage(&#39;dashboard&#39;)" style="background:#6b7280;flex:1">🏠 返回工作台</button>
+        <button class="btn btn-secondary" onclick="logoutUser()" style="color:#dc2626;border-color:#fca5a5;flex:1">🚪 退出登录</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+
+<script>
+// 授权码校验函数（混淆保护）
+function _kh(s){var a=0x67452301,b=0xEFCDAB89,c=0x98BADCFE,d=0x10325476;for(var i=0;i<s.length;i++){var ch=s.charCodeAt(i);a=((a<<5)-a+ch)|0;b=((b<<7)-b+ch+(a>>>3))|0;c=((c<<11)-c+ch+(b>>>5))|0;d=((d<<13)-d+ch+(c>>>7))|0;var t=a;a=d;d=c;c=b;b=t;}function th(n){return('0000000'+((n>>>0).toString(16))).slice(-7);}return(th(a)+th(b)+th(c)+th(d)).substring(0,16);}
+</script>
+<script>
+var currentOutput = {article:''};
+
+// 基础导航和工具函数
+function showPage(id){
+  var pages = document.querySelectorAll('.page');
+  for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
+  var navs = document.querySelectorAll('.nav-item');
+  for(var i=0;i<navs.length;i++) navs[i].classList.remove('active');
+  var target = document.getElementById('page-'+id);
+  if(target) target.classList.add('active');
+  var nav = document.querySelector('[data-page="'+id+'"]');
+  if(nav) nav.classList.add('active');
+}
+
+function onProviderChange(){
+  var p = document.getElementById('provider').value;
+  var providers = {
+    ollama:{url:'',model:'qwen3.6:35b-a3b-q4_K_M'},
+    openai:{url:'https://api.openai.com/v1',model:'gpt-4o'},
+    qwen:{url:'https://dashscope.aliyuncs.com/compatible-mode/v1',model:'qwen3-72b'},
+    deepseek:{url:'https://api.deepseek.com/v1',model:'deepseek-chat'},
+    custom:{url:'',model:''}
+  };
+  if(!p || !providers[p]) return;
+  if(providers[p].url) document.getElementById('ollamaUrl').value = providers[p].url;
+  if(providers[p].model) document.getElementById('ollamaModelManual').value = providers[p].model;
+}
+
+function getConfig(prefix){
+  var url = document.getElementById('ollamaUrl').value.trim();
+  if(!url) url = localStorage.getItem(prefix+'url') || '';
+  url = url.replace(/\/$/,'');
+  var apiKey = document.getElementById('apiKey') ? document.getElementById('apiKey').value.trim() : '';
+  if(!apiKey) apiKey = localStorage.getItem(prefix+'key') || '';
+  var provider = document.getElementById('provider') ? document.getElementById('provider').value : '';
+  if(!provider) provider = localStorage.getItem(prefix+'provider') || '';
+  var modelManual = document.getElementById('ollamaModelManual') ? document.getElementById('ollamaModelManual').value.trim() : '';
+  var modelSelect = document.getElementById('ollamaModel') ? document.getElementById('ollamaModel').value : '';
+  var model = modelManual || modelSelect || '';
+  var isOpenAI = url.indexOf('/v1') !== -1 || provider === 'openai' || provider === 'qwen' || provider === 'deepseek';
+  return {url:url, apiKey:apiKey, isOpenAI:isOpenAI, provider:provider, model:model};
+}
+
+function makeHeaders(apiKey){
+  var h = {'Content-Type':'application/json'};
+  if(apiKey) h['Authorization'] = 'Bearer ' + apiKey;
+  return h;
+}
+
+function joinUrl(base, path){
+  var clean = base.replace(/\/$/,'');
+  if(clean.lastIndexOf(path) === clean.length - path.length) return clean;
+  return clean + path;
+}
+
+async function callAPI(sysPrompt, userPrompt, onStream, temp, prefix){
+  var cfg = getConfig(prefix);
+  if(!cfg.url) throw new Error('请先设置API地址');
+  if(!cfg.model) throw new Error('请填写主模型名称');
+  var headers = makeHeaders(cfg.apiKey);
+  var apiUrl, body;
+  if(cfg.isOpenAI){
+    apiUrl = joinUrl(cfg.url, '/chat/completions');
+    body = JSON.stringify({model:cfg.model, messages:[{role:'system',content:sysPrompt},{role:'user',content:userPrompt}], stream:true, temperature:temp});
+  } else {
+    apiUrl = joinUrl(cfg.url, '/api/generate');
+    body = JSON.stringify({model:cfg.model, system:sysPrompt, prompt:userPrompt, stream:true, options:{temperature:temp}});
+  }
+  var response = await fetch(apiUrl, {method:'POST', headers:headers, body:body});
+  if(!response.ok){
+    var errText = await response.text().catch(function(){return '';});
+    var errDetail = errText;
+    try{ var j = JSON.parse(errText); errDetail = j.error && j.error.message || j.detail || j.message || errText; }catch(e){}
+    throw new Error('HTTP ' + response.status + ': ' + (errDetail || '未知错误').slice(0,300));
+  }
+  if(!response.body) throw new Error('No response body');
+  var reader = response.body.getReader();
+  var decoder = new TextDecoder();
+  var fullText = '';
+  var buffer = '';
+  while(true){
+    var chunk = await reader.read();
+    if(chunk.done) break;
+    var decoded = decoder.decode(chunk.value, {stream:true});
+    buffer += decoded;
+    var lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+    for(var i=0;i<lines.length;i++){
+      var line = lines[i].trim();
+      if(!line) continue;
+      if(cfg.isOpenAI && line.indexOf('data:') === 0){
+        var jsonStr = line.slice(5).trim();
+        if(jsonStr === '[DONE]') return fullText;
+        try{
+          var data = JSON.parse(jsonStr);
+          if(data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+          var content = data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content;
+          if(content){ fullText += content; if(onStream) onStream(fullText); }
+          if(data.choices && data.choices[0] && data.choices[0].finish_reason) return fullText;
+        }catch(e){}
+      } else {
+        try{
+          var data = JSON.parse(line);
+          if(data.error) throw new Error(data.error.message || data.error);
+          if(data.response){ fullText += data.response; if(onStream) onStream(fullText); }
+          if(data.done) return fullText;
+        }catch(e){}
+      }
+    }
+  }
+  if(buffer.trim()){
+    try{ var data = JSON.parse(buffer.trim()); if(data.response) fullText += data.response; }catch(e){}
+  }
+  return fullText;
+}
+
+// ===== 爆文提示词 =====
+var ARTP = `你是一名顶级自媒体内容创作者，擅长创作适配今日头条、百家号、微信公众号等平台的爆款图文文章。
+
+## 创作要求
+1. 题材适配：适配用户指定平台的算法推荐机制
+2. 字数要求：严格按照用户指定的字数范围输出
+3. 结构要求：
+   - 主标题（爆款吸睛，带数字/情绪词/悬念）
+   - 副标题（一句话概括核心观点）
+   - 导语钩子（前3行必须抓人眼球）
+   - 正文（3-5个小标题分段，每段有金句/数据/案例）
+   - 互动结尾（引导评论/转发/收藏）
+4. 排版要求：使用Markdown格式，已排版完成，用户可直接复制粘贴发布
+5. 原创度：去重>=80%，禁止抄袭
+6. 风格：根据用户选择的风格偏好输出
+7. 配图关键词：文章末尾必须额外输出3个与文章内容精准匹配的中文配图关键词
+8. 合规：内容100%合法
+
+## 输出格式
+# 【爆款主标题】
+
+> 【副标题】
+
+---
+
+**导语：**
+【导语内容】
+
+---
+
+## 一、【小标题1】
+【正文段落，含数据/案例/金句】
+
+## 二、【小标题2】
+【正文段落】
+
+## 三、【小标题3】
+【正文段落】
+
+---
+
+**结尾互动：**
+【引导评论/转发的话术】
+
+---
+
+> 🏷️ **标签建议：** #xxx #xxx #xxx
+
+[配图关键词:关键词1,关键词2,关键词3]`;
+
+async function runArticle(){
+  var topic = document.getElementById('articleTopic').value.trim();
+  if(!topic){ showToast('请输入热点话题'); return; }
+  var platform = document.getElementById('articlePlatform').value;
+  var words = document.getElementById('articleWords').value;
+  if(words === 'custom'){
+    words = document.getElementById('customWords').value || '2500';
+  }
+  var style = document.getElementById('articleStyle') ? document.getElementById('articleStyle').value : '';
+  if(!style) style = '口语化、情绪共鸣、观点鲜明';
+  var pubMode = document.getElementById('publishMode') ? document.getElementById('publishMode').value : 'review';
+  var pubTarget = document.getElementById('publishTarget') ? document.getElementById('publishTarget').value : '';
+  var pubNames = {toutiao:'今日头条',baijiahao:'百家号',weixin:'公众号',zhihu:'知乎',douyin:'抖音图文',xiaohongshu:'小红书',qihoo:'企鹅号'};
+  var extraNote = pubTarget ? '\n\n用户要求直接发布到【'+(pubNames[pubTarget]||pubTarget)+'】平台，请确保内容适配该平台算法推荐机制。' : '';
+  var userPrompt = '请围绕以下热点话题创作自媒体爆款文章：\n【热点话题】'+topic+'\n【适配平台】'+platform+'\n【目标字数】'+words+'字\n【风格偏好】'+style+extraNote+'\n\n请严格按照创作要求输出排版完成的文章。';
+  showResult('article', '爆文生成中...');
+  document.getElementById('btn-article').disabled = true;
+  try{
+    await callAPI(ARTP, userPrompt, function(t){updateOutput('article',t);}, parseFloat(document.getElementById('tempArticle').value)||0.7, 'fhmc-bw-');
+    updateStatus('article', '爆文生成完成！正在搜索配图...', 'green');
+    var fullText = currentOutput['article'] || '';
+    // 兜底：如果currentOutput为空，从DOM中获取
+    if(!fullText){
+      var outputEl = document.getElementById('output-article');
+      if(outputEl) fullText = outputEl.textContent || outputEl.innerText || '';
+    }
+    var kwMatch = fullText.match(/\[配图关键词:\s*([^\]]+)\]/);
+    var keywords = kwMatch ? kwMatch[1].split(/[,，]/).map(function(k){return k.trim();}) : [topic];
+    var cleanText = fullText.replace(/\n*\[配图关键词:[^\]]*\]\n*/g, '');
+    currentOutput['article'] = cleanText;
+    var outputEl = document.getElementById('output-article');
+    outputEl.innerHTML = renderMarkdown(cleanText);
+    await searchAndInsertImages(keywords.slice(0,3));
+    updateStatus('article', '爆文生成完成！', 'green');
+    if(pubMode === 'auto' && pubTarget && pubTarget.length > 0){
+      showToast('正在自动发布到'+ (pubNames[pubTarget]||pubTarget) +'...');
+      setTimeout(function(){ shareDirect(pubTarget); }, 500);
+    }
+  }catch(e){ updateStatus('article', e.message, 'red'); }
+  finally{ document.getElementById('btn-article').disabled = false; }
+}
+
+// ===== 实时热点获取（AI实时生成 + 缓存兜底） =====
+var HOT_CACHE_KEY = 'fhmc-bw-hot-cache';
+var HOT_CACHE_TIME = 1800000;
+
+var FALLBACK_TOPICS = [
+  'OpenAI GPT-5传闻引爆全网','AI换脸诈骗新套路曝光','Sora视频生成革新影视行业',
+  '苹果Vision Pro销量暴跌','华为Mate70系列曝光','特斯拉FSD入华倒计时',
+  '国产短剧出海月赚过亿','短剧演员日薪过万真相','短剧行业监管新规出台',
+  '新能源汽车价格战升级','小米SU7交付破10万','固态电池续航突破2000公里',
+  '直播带货新规正式出台','胖东来神仙企业管理模式','预制菜进校园引发家长抗议',
+  '黄金价格创历史新高','日元大幅贬值日本游爆火','巴以冲突最新局势',
+  '国风文化复兴汉服热销','中药奶茶养生新潮流','寺庙咖啡佛系营销',
+  '年轻人反向消费不买房','特种兵旅游24小时吃遍全城','脆皮大学生走红网络'
+];
+
+async function fetchHotTopicsFromAI(count) {
+  var cfg = getConfig('fhmc-bw-');
+  if (!cfg.url) return null;
+  var today = new Date().toLocaleDateString('zh-CN');
+  var prompt = '请列出' + today + '前后3天内，中文互联网上最热门的' + count + '个热点话题/新闻标题。每行一个，只输出话题文本，不要编号不要解释。';
+  try {
+    var ctrl = new AbortController();
+    setTimeout(function(){ ctrl.abort(); }, 60000);
+    var headers = makeHeaders(cfg.apiKey);
+    headers['Content-Type'] = 'application/json';
+    var body = JSON.stringify({
+      model: cfg.model || 'qwen3:14b',
+      messages: [{role:'user', content: prompt}],
+      stream: true,
+      temperature: 0.8
+    });
+    var resp = await fetch(joinUrl(cfg.url, cfg.isOpenAI ? '/chat/completions' : '/api/chat'), {
+      method: 'POST', headers: headers, body: body, signal: ctrl.signal
+    });
+    if (!resp.ok) return null;
+    var fullContent = '';
+    var reader = resp.body.getReader();
+    var decoder = new TextDecoder();
+    while (true) {
+      var chunk = await reader.read();
+      if (chunk.done) break;
+      var text = decoder.decode(chunk.value, {stream: true});
+      var lines = text.split('\n');
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (!line || !line.startsWith('data: ')) continue;
+        var data = line.slice(6);
+        if (data === '[DONE]') continue;
+        try {
+          var json = JSON.parse(data);
+          var delta = cfg.isOpenAI ? (json.choices && json.choices[0].delta && json.choices[0].delta.content) : (json.message && json.message.content);
+          if (delta) fullContent += delta;
+        } catch(e) {}
+      }
+    }
+    var topics = fullContent.split('\n').map(function(l){ return l.replace(/^\d+[\.\、\)）]\s*/, '').trim(); }).filter(function(l){ return l.length > 2 && l.length < 50; });
+    if (topics.length >= 3) {
+      localStorage.setItem(HOT_CACHE_KEY, JSON.stringify({time: Date.now(), topics: topics}));
+      return topics;
+    }
+    return null;
+  } catch(e) { return null; }
+}
+
+function getCachedTopics() {
+  try {
+    var raw = localStorage.getItem(HOT_CACHE_KEY);
+    if (!raw) return null;
+    var cache = JSON.parse(raw);
+    if (Date.now() - cache.time > HOT_CACHE_TIME) return null;
+    return cache.topics;
+  } catch(e) { return null; }
+}
+
+function getFallbackTopics(count) {
+  var shuffled = FALLBACK_TOPICS.slice().sort(function(){return 0.5 - Math.random();});
+  return shuffled.slice(0, Math.min(count, shuffled.length));
+}
+
+async function renderHotTopics(containerId, inputId) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  var countEl = document.getElementById('hotCount');
+  var count = countEl ? parseInt(countEl.value) : 10;
+  container.innerHTML = '<span style="font-size:11px;color:#9ca3af">🔥 正在获取实时热点...</span>';
+  var topics = getCachedTopics();
+  if (!topics) { topics = await fetchHotTopicsFromAI(count); }
+  if (!topics || topics.length < 3) { topics = getFallbackTopics(count); }
+  topics = topics.slice(0, Math.min(count, topics.length));
+  var html = '';
+  var targetId = inputId || 'articleTopic';
+  for (var i = 0; i < topics.length; i++) {
+    html += '<span class="hot-tag" data-t="' + topics[i].replace(/"/g, '&quot;') + '" data-target="' + targetId + '">' + topics[i] + '</span>';
+  }
+  container.innerHTML = html;
+  var tags = container.querySelectorAll('.hot-tag');
+  for (var i = 0; i < tags.length; i++) {
+    (function(tag) {
+      tag.addEventListener('click', function() {
+        var el = document.getElementById(tag.getAttribute('data-target'));
+        if (el) { el.value = tag.getAttribute('data-t'); showToast('已选择: ' + tag.getAttribute('data-t')); }
+      });
+    })(tags[i]);
+  }
+}
+
+function refreshHotTopics() {
+  localStorage.removeItem(HOT_CACHE_KEY);
+  renderHotTopics('hot-topics-article', 'articleTopic');
+  showToast('正在获取最新实时热点...');
+}
+
+// ===== 配图搜索（Openverse CC免费图库 + 关键词精准匹配） =====
+var PIXABAY_KEY = localStorage.getItem('fhmc-bw-pixabay-key') || '46674310-6b057e95d296121d771c35c89';
+
+async function searchImages(query) {
+  var results = [];
+  // Pixabay——注册即得免费Key（https://pixabay.com/api/docs/），获取后图片与文章精准匹配
+  if (PIXABAY_KEY) {
+    try {
+      var pxResp = await fetch('https://pixabay.com/api/?key=' + PIXABAY_KEY + '&q=' + encodeURIComponent(query) + '&per_page=5&image_type=photo&safesearch=true&lang=zh');
+      if (pxResp.ok) {
+        var pxData = await pxResp.json();
+        if (pxData.hits && pxData.hits.length > 0) {
+          for (var i = 0; i < Math.min(pxData.hits.length, 5); i++) {
+            results.push({url: pxData.hits[i].largeImageURL, credit: 'Pixabay', tags: pxData.hits[i].tags});
+          }
+          return results.slice(0, 3);
+        }
+      }
+    } catch(e) {}
+  }
+  // 兜底：彩色关键词视觉卡片，绝不显示随机不相关图片
+  for (var i = 0; i < 3; i++) {
+    results.push({url: '__card__:' + query, credit: 'keyword-card', tags: query});
+  }
+  return results;
+}
+
+async function searchAndInsertImages(keywords) {
+  var imgsBlock = document.getElementById('images-block-article');
+  var imgsRow = document.getElementById('imgs-row-article');
+  if (!imgsBlock || !imgsRow) return;
+  imgsBlock.style.display = 'block';
+  imgsRow.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#9ca3af;font-size:12px;padding:20px"><span class="spinner"></span> 正在搜索无版权配图...</div>';
+  var realImages = [];
+  var cardImages = [];
+  for (var i = 0; i < keywords.length; i++) {
+    var imgs = await searchImages(keywords[i]);
+    for (var j = 0; j < imgs.length; j++) {
+      var item = {url: imgs[j].url, credit: imgs[j].credit, keyword: keywords[i]};
+      if (item.url.indexOf('__card__:') === 0) {
+        cardImages.push(item);
+      } else {
+        realImages.push(item);
+      }
+    }
+  }
+  var allImages = realImages.concat(cardImages).slice(0, 3);
+  if (allImages.length === 0) { imgsBlock.style.display = 'none'; return; }
+  var gradients = ['linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#f093fb,#f5576c)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#43e97b,#38f9d7)','linear-gradient(135deg,#fa709a,#fee140)'];
+  var html = '';
+  for (var i = 0; i < allImages.length; i++) {
+    var img = allImages[i];
+    if (img.url.indexOf('__card__:') === 0) {
+      html += '<div class="img-card"><div style="width:100%;aspect-ratio:16/9;border-radius:6px;background:' + gradients[i % gradients.length] + ';display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,0.3)">📷 ' + img.keyword + '</div><p>' + img.keyword + '</p><span class="img-credit">Pixabay配图</span></div>';
+    } else {
+      html += '<div class="img-card"><img src="' + img.url + '" alt="' + img.keyword + '" loading="lazy"/><p>' + img.keyword + '</p><span class="img-credit">来源: ' + img.credit + '（无版权）</span></div>';
+    }
+  }
+  imgsRow.innerHTML = html;
+  var outputEl = document.getElementById('output-article');
+    if(!outputEl) return;
+    var ptags = outputEl.querySelectorAll('p');
+    var positions = [];
+    if (ptags.length >= 6) {
+      positions = [ptags[Math.floor(ptags.length * 0.2)], ptags[Math.floor(ptags.length * 0.5)], ptags[Math.floor(ptags.length * 0.8)]];
+    } else if (ptags.length >= 3) {
+      positions = [ptags[0], ptags[Math.floor(ptags.length / 2)], ptags[ptags.length - 1]];
+    }
+    for (var i = 0; i < allImages.length; i++) {
+    var img = allImages[i];
+    var imgHtml;
+    if (img.url.indexOf('__card__:') === 0) {
+      imgHtml = '<div style="margin:24px 0;padding:50px 24px;border-radius:8px;background:' + gradients[i % gradients.length] + ';text-align:center;color:#fff;font-size:20px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,0.3)">📷 ' + img.keyword + '</div><p style="font-size:11px;color:#9ca3af;text-align:center;margin:4px 0 0">图片仅供参考，建议更换为自有图片</p>';
+    } else {
+      imgHtml = '<div style="margin:24px 0;text-align:center"><img src="' + img.url + '" style="max-width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1)" alt="' + img.keyword + '" loading="lazy"/><p style="font-size:12px;color:#9ca3af;margin-top:6px">▲ ' + img.keyword + ' | 来源: ' + img.credit + '</p></div>';
+    }
+    if (positions[i]) {
+      positions[i].insertAdjacentHTML('afterend', imgHtml);
+    } else if (ptags.length > 0) {
+      // 有段落但position不够时，追加到最后一段后面
+      ptags[ptags.length - 1].insertAdjacentHTML('afterend', imgHtml);
+    } else {
+      outputEl.insertAdjacentHTML('beforeend', imgHtml);
+    }
+  }
+}
+
+// ===== 一键分享到平台（先复制格式再打开发文页） =====
+async function shareDirect(platform) {
+  var text = currentOutput['article'] || '';
+  if (!text) { showToast('没有内容可分享'); return; }
+  var urls = {
+    toutiao: 'https://mp.toutiao.com/profile_v4/graphic/publish',
+    baijiahao: 'https://baijiahao.baidu.com/builder/rc/edit',
+    weixin: 'https://mp.weixin.qq.com/',
+    zhihu: 'https://zhuanlan.zhihu.com/write',
+    douyin: 'https://creator.douyin.com/creator-micro/content/upload',
+    xiaohongshu: 'https://creator.xiaohongshu.com/publish/publish',
+    qihoo: 'https://om.qq.com/userAuth/index'
+  };
+  var outputEl = document.getElementById('output-article');
+  var html = outputEl ? outputEl.innerHTML : renderMarkdown(text);
+  var names = {toutiao:'今日头条',baijiahao:'百家号',weixin:'公众号',zhihu:'知乎',douyin:'抖音图文',xiaohongshu:'小红书',qihoo:'企鹅号'};
+  showToast('正在复制格式内容...');
+  try {
+    await copyRichText('<div style="font-family:system-ui,-apple-system,sans-serif;line-height:1.8;font-size:16px;color:#333">' + html + '</div>', text);
+    showToast('✅ 内容已复制！正在打开' + (names[platform]||'平台') + '，Ctrl+V粘贴即可发布');
+  } catch(e) {
+    showToast('复制失败，但已打开平台页面');
+  }
+  var url = urls[platform] || '';
+  if (url) {
+    setTimeout(function(){ window.open(url, '_blank', 'noopener,noreferrer'); }, 300);
+  }
+}
+
+function toggleCustomWords(){
+  var sel = document.getElementById('articleWords').value;
+  var custom = document.getElementById('customWords');
+  if(sel === 'custom'){
+    custom.style.display = 'block';
+    custom.focus();
+  } else {
+    custom.style.display = 'none';
+    custom.value = sel;
+  }
+}
+
+// ===== Markdown渲染（绿色主题） =====
+function renderMarkdown(text){
+  var html = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  html = html.replace(/^#### (.*$)/gim, '<h3 style="font-size:14px;font-weight:600;margin:12px 0 8px">$1</h3>');
+  html = html.replace(/^### (.*$)/gim, '<h2 style="font-size:16px;font-weight:600;margin:14px 0 10px;color:#374151">$1</h2>');
+  html = html.replace(/^## (.*$)/gim, '<h2 style="font-size:16px;font-weight:600;margin:14px 0 10px;color:#374151;border-bottom:1px solid #e5e5e5;padding-bottom:6px">$1</h2>');
+  html = html.replace(/^# (.*$)/gim, '<h1 style="font-size:20px;font-weight:700;margin:16px 0 12px;border-bottom:2px solid #059669;padding-bottom:8px">$1</h1>');
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  html = html.replace(/^&gt; (.*$)/gim, '<blockquote style="border-left:3px solid #059669;margin:10px 0;padding:8px 16px;background:#fafaf9;color:#4b5563">$1</blockquote>');
+  html = html.replace(/^---$/gim, '<hr style="border:none;border-top:1px solid #e5e5e5;margin:12px 0">');
+  html = html.replace(/`([^`]+)`/g, '<code style="background:#f5f5f4;padding:2px 4px;border-radius:3px;font-size:12px">$1</code>');
+  html = html.replace(/^\* (.*$)/gim, '<ul style="margin:8px 0 8px 24px"><li>$1</li></ul>');
+  html = html.replace(/^- (.*$)/gim, '<ul style="margin:8px 0 8px 24px"><li>$1</li></ul>');
+  html = html.replace(/^\d+\. (.*$)/gim, '<ol style="margin:8px 0 8px 24px"><li>$1</li></ol>');
+  html = html.replace(/\n\n/g, '</p><p>');
+  html = html.replace(/\n/g, '<br>');
+  return '<p>' + html + '</p>';
+}
+
+function showResult(type, text){
+  document.getElementById('result-card-'+type).style.display = 'block';
+  document.getElementById('status-bar-'+type).innerHTML = '<span class="spinner"></span> ' + text;
+  document.getElementById('output-'+type).innerHTML = '';
+}
+function updateOutput(type, text){
+  document.getElementById('output-'+type).innerHTML = renderMarkdown(text);
+  currentOutput[type] = text;
+}
+function updateStatus(type, text, color){
+  var cls = color === 'green' ? 'badge-green' : color === 'red' ? 'badge-red' : 'badge-yellow';
+  document.getElementById('status-bar-'+type).innerHTML = '<span class="badge '+cls+'">'+text+'</span>';
+}
+async function copyRichText(html, text){
+  try{
+    if(navigator.clipboard.write && typeof ClipboardItem !== 'undefined'){
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html': new Blob([html], {type:'text/html'}),
+          'text/plain': new Blob([text], {type:'text/plain'})
+        })
+      ]);
+    } else { await navigator.clipboard.writeText(text); }
+  }catch(e){ await navigator.clipboard.writeText(text); }
+}
+
+function copyOutput(type){
+  var text = currentOutput[type] || '';
+  if(!text) { showToast('没有内容'); return; }
+  var html = document.getElementById('output-'+type).innerHTML;
+  copyRichText('<div style="font-family:system-ui,-apple-system,sans-serif;line-height:1.8;font-size:16px;color:#333">'+html+'</div>', text);
+  showToast('已复制（含格式）');
+}
+
+function saveOutput(type, format){
+  var text = currentOutput[type] || '';
+  if(!text) { showToast('没有内容'); return; }
+  var prefix = '写文';
+  var date = new Date().toISOString().slice(0,10);
+  var blob, filename;
+  if(format === 'doc'){
+    var css = '<style>body{font-family:\'宋体\',SimSun,serif;font-size:12pt;line-height:1.8;max-width:210mm;margin:20mm auto;padding:0 15mm}h1{font-size:18pt;font-weight:bold;text-align:center;margin:24pt 0;border-bottom:2pt solid #059669;padding-bottom:8pt}h2{font-size:14pt;font-weight:bold;margin:18pt 0 12pt;border-bottom:1pt solid #ccc;padding-bottom:4pt}blockquote{border-left:3pt solid #059669;margin:12pt 0;padding:8pt 16pt;background:#fafaf9}hr{border:none;border-top:1pt solid #ddd;margin:16pt 0}p{margin:8pt 0;text-indent:2em}strong{font-weight:bold}</style>';
+    var html = '<!DOCTYPE html><html><head><meta charset="utf-8">'+css+'</head><body>'+renderMarkdown(text)+'</body></html>';
+    blob = new Blob([html], {type:'application/msword;charset=utf-8'});
+    filename = prefix + '_' + date + '.doc';
+  } else if(format === 'md'){
+    blob = new Blob([text], {type:'text/markdown;charset=utf-8'});
+    filename = prefix + '_' + date + '.md';
+  } else {
+    blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+    filename = prefix + '_' + date + '.txt';
+  }
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('已保存 ' + filename);
+}
+
+function shareTo(platform){
+  var text = currentOutput['article'] || '';
+  if(!text){ showToast('没有内容可分享'); return; }
+  var html = document.getElementById('output-article').innerHTML;
+  // 先同步打开窗口（避免浏览器拦截），再复制内容
+  var urls = {
+    toutiao: 'https://mp.toutiao.com/profile_v4/graphic/publish',
+    baijiahao: 'https://baijiahao.baidu.com/builder/rc/edit',
+    weixin: 'https://mp.weixin.qq.com/',
+    zhihu: 'https://zhuanlan.zhihu.com/write',
+    douyin: 'https://creator.douyin.com/creator-micro/content/upload',
+    xiaohongshu: 'https://creator.xiaohongshu.com/publish/publish'
+  };
+  var url = urls[platform] || '';
+  if(url) window.open(url, '_blank', 'noopener,noreferrer');
+  copyRichText('<div style="font-family:system-ui,-apple-system,sans-serif;line-height:1.8;font-size:16px;color:#333">'+html+'</div>', text);
+  showToast('格式内容已复制！粘贴到平台即可保留排版');
+}
+
+function saveAndClose(type, fmt){
+  var d = document.getElementById('save-details-'+type);
+  if(d) d.open = false;
+  saveOutput(type, fmt);
+}
+
+function showToast(msg){
+  var t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 3000);
+}
+
+async function testConnection(prefix){
+  var resultEl = document.getElementById('test-result');
+  var cfg = getConfig(prefix);
+  if(!cfg.url) { resultEl.innerHTML = '<span class="badge badge-red">请先填写API地址</span>'; return; }
+  resultEl.innerHTML = '<span class="spinner"></span> 检测中...';
+  try{
+    var ctrl = new AbortController();
+    setTimeout(function(){ ctrl.abort(); }, 8000);
+    var headers = makeHeaders(cfg.apiKey);
+    var testUrl = cfg.isOpenAI ? joinUrl(cfg.url, '/models') : joinUrl(cfg.url, '/api/tags');
+    var resp = await fetch(testUrl, {method:'GET', headers:headers, signal:ctrl.signal});
+    if(resp.ok){
+      var data = await resp.json();
+      var models = [];
+      if(cfg.isOpenAI) models = (data.data || []).map(function(m){return m.id;});
+      else models = (data.models || []).map(function(m){return m.name || m.model;});
+      if(models.length === 0){ resultEl.innerHTML = '<span class="badge badge-yellow">连接正常但未获取模型</span>'; return; }
+      var saved = localStorage.getItem(prefix+'model') || '';
+      var opts = '<option value="">-- 可选 --</option>';
+      for(var i=0;i<models.length;i++){
+        opts += '<option value="' + models[i] + '"' + (models[i] === saved ? ' selected' : '') + '>' + models[i] + '</option>';
+      }
+      document.getElementById('ollamaModel').innerHTML = opts;
+      if(!document.getElementById('ollamaModelManual').value && models.length > 0){
+        document.getElementById('ollamaModelManual').value = models[0];
+      }
+      resultEl.innerHTML = '<span class="badge badge-green">正常 &middot; ' + models.length + '个模型</span>';
+    } else {
+      var txt = await resp.text().catch(function(){return '';});
+      resultEl.innerHTML = '<span class="badge badge-red">HTTP ' + resp.status + '</span>';
+    }
+  }catch(e){
+    resultEl.innerHTML = '<span class="badge badge-red">' + (e.name === 'AbortError' ? '超时' : e.message) + '</span>';
+  }
+}
+
+function saveSettings(prefix, extras){
+  localStorage.setItem(prefix+'provider', document.getElementById('provider').value);
+  localStorage.setItem(prefix+'url', document.getElementById('ollamaUrl').value.trim());
+  localStorage.setItem(prefix+'key', document.getElementById('apiKey').value.trim());
+  localStorage.setItem(prefix+'model', document.getElementById('ollamaModelManual').value.trim());
+  if(extras) for(var i=0;i<extras.length;i++){
+    localStorage.setItem(prefix+extras[i].id, document.getElementById(extras[i].id).value);
+  }
+  showToast('设置已保存');
+}
+
+function resetSettings(prefix, extras){
+  document.getElementById('provider').value = '';
+  document.getElementById('ollamaUrl').value = '';
+  document.getElementById('apiKey').value = '';
+  document.getElementById('ollamaModelManual').value = '';
+  document.getElementById('ollamaModel').innerHTML = '<option value="">-- 可选 --</option>';
+  var keys = ['provider','url','key','model'];
+  for(var i=0;i<keys.length;i++) localStorage.removeItem(prefix+keys[i]);
+  if(extras) for(var i=0;i<extras.length;i++){
+    document.getElementById(extras[i].id).value = extras[i].default;
+    localStorage.removeItem(prefix+extras[i].id);
+  }
+  showToast('已重置');
+}
+
+function loadSettings(prefix, extras){
+  var p = localStorage.getItem(prefix+'provider');
+  if(p) document.getElementById('provider').value = p;
+  var u = localStorage.getItem(prefix+'url');
+  if(u) document.getElementById('ollamaUrl').value = u;
+  var k = localStorage.getItem(prefix+'key');
+  if(k) document.getElementById('apiKey').value = k;
+  var m = localStorage.getItem(prefix+'model');
+  if(m) document.getElementById('ollamaModelManual').value = m;
+  if(extras) for(var i=0;i<extras.length;i++){
+    var v = localStorage.getItem(prefix+extras[i].id);
+    if(v) document.getElementById(extras[i].id).value = v;
+  }
+}
+
+// 页面加载时渲染热点
+document.addEventListener('DOMContentLoaded', function(){
+  renderHotTopics('hot-topics-article', 'articleTopic');
+});
+
+loadSettings('fhmc-bw-', [{id:'tempArticle', default:'0.7'}]);
+</script>
+
+<script>
+
+// ===== 用户注册/登录/设备绑定系统 =====
+var USER_PREFIX = 'fhmc-bw';
+var APP_NAME = '小树屋AI';
+
+// 获取设备指纹
+function getDeviceId(){
+  var key = USER_PREFIX + '-device';
+  var id = localStorage.getItem(key);
+  if(!id){
+    id = 'D' + Date.now().toString(36) + Math.random().toString(36).substr(2,6).toUpperCase();
+    localStorage.setItem(key, id);
+  }
+  return id;
+}
+
+// SHA256简单哈希
+function sha256(s){
+  var hash = 0;
+  for(var i=0;i<s.length;i++){
+    var c = s.charCodeAt(i);
+    hash = ((hash<<5)-hash)+c;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(16).padStart(8,'0');
+}
+
+// 用户注册
+function registerUser(username, password, inviteCode){
+  var users = JSON.parse(localStorage.getItem('fhmc-users-baowen') || '[]');
+  // 检查用户名是否已存在
+  for(var i=0;i<users.length;i++){
+    if(users[i].username === username) return {ok:false, msg:'用户名已存在'};
+  }
+  // 检查设备是否已注册过（一个设备只能注册一个账号）
+  var deviceId = getDeviceId();
+  for(var i=0;i<users.length;i++){
+    for(var j=0;j<users[i].devices.length;j++){
+      if(users[i].devices[j] === deviceId){
+        return {ok:false, msg:'该设备已注册过账号，请直接登录'};
+      }
+    }
+  }
+
+  var user = {
+    username: username,
+    password: sha256(password),
+    created: Date.now(),
+    inviteCode: generateInviteCode(),
+    trialEnd: Date.now() + 3 * 86400000, // 3天试用
+    authDays: 0,
+    authEnd: 0,
+    devices: [getDeviceId()],
+    invitedBy: inviteCode || null,
+    shareCount: 0
+  };
+
+  // 如果有邀请码，处理裂变
+  if(inviteCode){
+    var inviter = findUserByInviteCode(inviteCode);
+    if(inviter){
+      // 被邀请人+3天
+      user.trialEnd += 3 * 86400000;
+      // 邀请人也+3天
+      for(var j=0;j<users.length;j++){
+        if(users[j].username === inviter.username){
+          users[j].trialEnd += 3 * 86400000;
+          users[j].shareCount++;
+          break;
+        }
+      }
+    }
+  }
+
+  users.push(user);
+  localStorage.setItem('fhmc-users-baowen', JSON.stringify(users));
+
+  // 自动登录
+  localStorage.setItem(USER_PREFIX + '-user', username);
+  return {ok:true, msg:'注册成功！获得3天免费试用'};
+}
+
+// 用户登录
+function loginUser(username, password){
+  var users = JSON.parse(localStorage.getItem('fhmc-users-baowen') || '[]');
+  for(var i=0;i<users.length;i++){
+    if(users[i].username === username && users[i].password === sha256(password)){
+      // 检查设备
+      var deviceId = getDeviceId();
+      var devices = users[i].devices;
+      var hasDevice = false;
+      for(var j=0;j<devices.length;j++){
+        if(devices[j] === deviceId){ hasDevice = true; break; }
+      }
+      if(!hasDevice){
+        if(devices.length >= 2){
+          return {ok:false, msg:'该账号已在2个设备上使用，请先在其他设备退出'};
+        }
+        users[i].devices.push(deviceId);
+        localStorage.setItem('fhmc-users-baowen', JSON.stringify(users));
+      }
+      localStorage.setItem(USER_PREFIX + '-user', username);
+      return {ok:true, msg:'登录成功'};
+    }
+  }
+  return {ok:false, msg:'用户名或密码错误'};
+}
+
+// 退出登录
+function logoutUser(){
+  var username = localStorage.getItem(USER_PREFIX + '-user');
+  if(username){
+    // 从设备列表移除当前设备
+    var users = JSON.parse(localStorage.getItem('fhmc-users-baowen') || '[]');
+    var deviceId = getDeviceId();
+    for(var i=0;i<users.length;i++){
+      if(users[i].username === username){
+        users[i].devices = users[i].devices.filter(function(d){return d !== deviceId;});
+        localStorage.setItem('fhmc-users-baowen', JSON.stringify(users));
+        break;
+      }
+    }
+  }
+  localStorage.removeItem(USER_PREFIX + '-user');
+  showLoginOverlay();
+}
+
+// 查找用户
+function findUserByInviteCode(code){
+  var users = JSON.parse(localStorage.getItem('fhmc-users-baowen') || '[]');
+  for(var i=0;i<users.length;i++){
+    if(users[i].inviteCode === code) return users[i];
+  }
+  return null;
+}
+
+function getCurrentUser(){
+  var username = localStorage.getItem(USER_PREFIX + '-user');
+  if(!username) return null;
+  var users = JSON.parse(localStorage.getItem('fhmc-users-baowen') || '[]');
+  for(var i=0;i<users.length;i++){
+    if(users[i].username === username) return users[i];
+  }
+  return null;
+}
+
+// 生成邀请码
+function generateInviteCode(){
+  var chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  var code = '';
+  for(var i=0;i<6;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+
+// 检查用户状态（试用/授权）
+function checkUserStatus(){
+  var user = getCurrentUser();
+  if(!user) return {canUse:false, reason:'nologin', msg:'请先登录'};
+
+  var now = Date.now();
+
+  // 检查授权
+  if(user.authEnd > now){
+    var left = Math.ceil((user.authEnd - now) / 86400000);
+    return {canUse:true, type:'auth', days:left, msg:'授权剩余'+left+'天'};
+  }
+
+  // 检查试用
+  if(user.trialEnd > now){
+    var left = Math.ceil((user.trialEnd - now) / 86400000);
+    return {canUse:true, type:'trial', days:left, msg:'试用剩余'+left+'天'};
+  }
+
+  return {canUse:false, reason:'expired', msg:'试用已到期，请购买授权码'};
+}
+
+// 激活授权码（绑定到用户）
+// 验证授权码
+function verifyAuthCode(code){
+  if(!code || code.indexOf('-') < 0) return null;
+  var parts = code.split('-');
+  if(parts.length !== 3) return null;
+  var days = parseInt(parts[0]);
+  if(isNaN(days) || days < 1 || days > 99999) return null;
+  var hash = 0;
+  var checkStr = days + '-' + parts[1] + '-fhAR2025!mc#KX9@v2_sell';
+  for(var i = 0; i < checkStr.length; i++){
+    var c = checkStr.charCodeAt(i);
+    hash = ((hash << 5) - hash) + c;
+    hash = hash & hash;
+  }
+  var check = Math.abs(hash).toString(16).substring(0, 4).toUpperCase();
+  if(check !== parts[2].toUpperCase()) return null;
+  return days;
+}
+
+function activateAuthCode(code){
+  var days = verifyAuthCode(code);
+  if(!days) return {ok:false, msg:'授权码无效'};
+
+  var user = getCurrentUser();
+  if(!user) return {ok:false, msg:'请先登录'};
+
+  var now = Date.now();
+  var username = user.username;
+  var users = JSON.parse(localStorage.getItem('fhmc-users-baowen') || '[]');
+
+  for(var i=0;i<users.length;i++){
+    if(users[i].username === username){
+      // 如果已有授权，累加
+      var base = users[i].authEnd > now ? users[i].authEnd : now;
+      users[i].authEnd = base + days * 86400000;
+      localStorage.setItem('fhmc-users-baowen', JSON.stringify(users));
+      return {ok:true, msg:'激活成功！增加'+days+'天'};
+    }
+  }
+  return {ok:false, msg:'激活失败'};
+}
+
+// 显示登录层
+function showLoginOverlay(){
+  document.getElementById('login-overlay').style.display = 'flex';
+  document.getElementById('app-main').style.display = 'none';
+  document.getElementById('auth-overlay').style.display = 'none';
+}
+
+// 显示授权层
+function showAuthOverlay(){
+  document.getElementById('auth-overlay').style.display = 'flex';
+  document.getElementById('app-main').style.display = 'none';
+  document.getElementById('login-overlay').style.display = 'none';
+}
+
+// 显示主界面
+function showMainApp(){
+  document.getElementById('login-overlay').style.display = 'none';
+  document.getElementById('auth-overlay').style.display = 'none';
+  document.getElementById('app-main').style.display = '';
+}
+
+// 检查并显示对应界面
+function checkAndShow(){
+  var user = getCurrentUser();
+  if(!user){
+    showLoginOverlay();
+    return;
+  }
+  var status = checkUserStatus();
+  if(status.canUse){
+    showMainApp();
+    if(status.days <= 3){
+      showToast(status.msg + '，请及时购买授权码');
+    }
+  } else {
+    showAuthOverlay();
+  }
+}
+
+
+// 登录注册交互
+// 激活授权码按钮
+function doActivate(){
+  var code = document.getElementById('authCode').value.trim().toUpperCase();
+  if(!code){ document.getElementById('auth-msg').textContent = '请输入授权码'; document.getElementById('auth-msg').style.color = '#dc2626'; return; }
+  var days = verifyAuthCode(code);
+  if(!days){ document.getElementById('auth-msg').textContent = '授权码无效，请检查'; document.getElementById('auth-msg').style.color = '#dc2626'; return; }
+  var result = activateAuthCode(code);
+  if(result.ok){
+    document.getElementById('auth-msg').style.color = '#059669';
+    document.getElementById('auth-msg').textContent = result.msg;
+    setTimeout(function(){ checkAndShow(); updateUserStatus(); }, 800);
+  } else {
+    document.getElementById('auth-msg').textContent = result.msg;
+    document.getElementById('auth-msg').style.color = '#dc2626';
+  }
+}
+
+
+function switchTab(tab){
+  if(tab === 'login'){
+    document.getElementById('login-form').style.display = '';
+    document.getElementById('register-form').style.display = 'none';
+    document.getElementById('tab-login').style.borderBottom = '2px solid #d97706';
+    document.getElementById('tab-login').style.color = '#92400e';
+    document.getElementById('tab-login').style.fontWeight = '600';
+    document.getElementById('tab-register').style.borderBottom = '2px solid transparent';
+    document.getElementById('tab-register').style.color = '#6b7280';
+    document.getElementById('tab-register').style.fontWeight = '400';
+  } else {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('register-form').style.display = '';
+    document.getElementById('tab-register').style.borderBottom = '2px solid #d97706';
+    document.getElementById('tab-register').style.color = '#92400e';
+    document.getElementById('tab-register').style.fontWeight = '600';
+    document.getElementById('tab-login').style.borderBottom = '2px solid transparent';
+    document.getElementById('tab-login').style.color = '#6b7280';
+    document.getElementById('tab-login').style.fontWeight = '400';
+  }
+}
+
+function doLogin(){
+  var username = document.getElementById('login-username').value.trim();
+  var password = document.getElementById('login-password').value;
+  if(!username || !password){ document.getElementById('login-msg').textContent = '请输入用户名和密码'; return; }
+  var result = loginUser(username, password);
+  document.getElementById('login-msg').textContent = result.msg;
+  document.getElementById('login-msg').style.color = result.ok ? '#059669' : '#dc2626';
+  if(result.ok){
+    setTimeout(function(){ checkAndShow(); updateShareLink(); }, 500);
+  }
+}
+
+function doRegister(){
+  var username = document.getElementById('reg-username').value.trim();
+  var password = document.getElementById('reg-password').value;
+  var inviteCode = document.getElementById('reg-invite').value.trim().toUpperCase();
+  if(!username || !password){ document.getElementById('login-msg').textContent = '请填写完整信息'; return; }
+  if(username.length < 3 || username.length > 20){ document.getElementById('login-msg').textContent = '用户名3-20位'; return; }
+  if(password.length < 6){ document.getElementById('login-msg').textContent = '密码至少6位'; return; }
+  var result = registerUser(username, password, inviteCode);
+  document.getElementById('login-msg').textContent = result.msg;
+  document.getElementById('login-msg').style.color = result.ok ? '#059669' : '#dc2626';
+  if(result.ok){
+    setTimeout(function(){ checkAndShow(); updateShareLink(); }, 500);
+  }
+}
+
+function selectPlan(plan){
+  var plans = {month:30, quarter:90, year:365, forever:99999};
+  var days = plans[plan];
+  alert('请联系购买授权码\n套餐：' + (plan==='month'?'月卡':plan==='quarter'?'季卡':plan==='year'?'年卡':'永久卡') + '\n价格：' + (plan==='month'?'5元':plan==='quarter'?'12元':plan==='year'?'18元':'68元'));
+}
+
+function updateShareLink(){
+  var user = getCurrentUser();
+  if(user){
+    var link = window.location.origin + window.location.pathname + '?invite=' + user.inviteCode;
+    if(document.getElementById('share-link')) document.getElementById('share-link').value = link;
+    
+  }
+}
+
+function copyInviteCode(){
+  var user = getCurrentUser();
+  if(!user){ showToast('请先登录'); return; }
+  navigator.clipboard.writeText(user.inviteCode).then(function(){
+    showToast('邀请码 ' + user.inviteCode + ' 已复制！');
+  });
+}
+
+function copyShareLink(){
+  var link = document.getElementById('share-link').value;
+  if(!link){ showToast('请先登录'); return; }
+  navigator.clipboard.writeText(link).then(function(){
+    showToast('分享链接已复制！');
+  });
+}
+
+// 检查URL中的邀请码
+function checkUrlInvite(){
+  var params = new URLSearchParams(window.location.search);
+  var invite = params.get('invite');
+  if(invite){
+    document.getElementById('reg-invite').value = invite;
+    switchTab('register');
+    showLoginOverlay();
+  }
+}
+
+// 更新用户状态显示
+function updateUserStatus(){
+  var user = getCurrentUser();
+  if(!user) return;
+  var status = checkUserStatus();
+  var el = document.getElementById('user-status');
+  if(el){
+    el.textContent = status.msg;
+    el.style.color = status.type === 'trial' ? '#92400e' : '#059669';
+  }
+  // 侧边栏显示用户信息
+  var userEl = document.querySelector('.sidebar-header p');
+  if(userEl && status.canUse){
+    userEl.innerHTML = user.username + ' <span style="color:' + (status.type==='trial'?'#92400e':'#059669') + '">' + status.msg + '</span>';
+  }
+}
+
+function renderProfile(){
+  var user = getCurrentUser();
+  if(!user) return;
+  var status = checkUserStatus();
+  document.getElementById('profile-username').textContent = user.username;
+  document.getElementById('profile-avatar').textContent = user.username.charAt(0).toUpperCase();
+  var stText = status.type === 'trial' ? '试用期' : status.type === 'auth' ? '授权会员' : '已过期';
+  var stColor = status.type === 'trial' ? '#92400e' : status.type === 'auth' ? '#059669' : '#dc2626';
+  var stBg = status.type === 'trial' ? '#fef3c7' : status.type === 'auth' ? '#d1fae5' : '#fee2e2';
+  document.getElementById('profile-status').innerHTML = '<span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:12px;color:' + stColor + ';background:' + stBg + '">' + stText + '</span>';
+  document.getElementById('profile-days').textContent = status.days > 0 ? '剩余 ' + (status.days >= 99999 ? '永久' : status.days + ' 天') : '已过期，请购买授权码';
+  document.getElementById('profile-days').style.color = status.days > 3 ? '#059669' : status.days > 0 ? '#d97706' : '#dc2626';
+  document.getElementById('profile-invite').textContent = user.inviteCode;
+  var inviteSection = document.getElementById('invite-section');
+  if(inviteSection){ inviteSection.style.display = user.usedInvite ? 'none' : 'block'; }
+}
+
+function submitInviteCode(){
+  var code = document.getElementById('profile-invite-input').value.trim().toUpperCase();
+  if(!code){ document.getElementById('profile-invite-msg').textContent = '请输入邀请码'; document.getElementById('profile-invite-msg').style.color = '#dc2626'; return; }
+  var user = getCurrentUser();
+  if(!user){ document.getElementById('profile-invite-msg').textContent = '请先登录'; return; }
+  if(code === user.inviteCode){ document.getElementById('profile-invite-msg').textContent = '不能填写自己的邀请码'; document.getElementById('profile-invite-msg').style.color = '#dc2626'; return; }
+  var users = JSON.parse(localStorage.getItem('fhmc-users-baowen') || '[]');
+  var inviter = null;
+  for(var i=0;i<users.length;i++){ if(users[i].inviteCode === code){ inviter = users[i]; break; } }
+  if(!inviter){ document.getElementById('profile-invite-msg').textContent = '邀请码无效'; document.getElementById('profile-invite-msg').style.color = '#dc2626'; return; }
+  if(!user.usedInvite){
+    user.trialEnd = (user.trialEnd || Date.now()) + 3 * 86400000;
+    user.usedInvite = code;
+    saveCurrentUser(user);
+    for(var i=0;i<users.length;i++){ if(users[i].username === inviter.username){ users[i].trialEnd = (users[i].trialEnd || Date.now()) + 3 * 86400000; localStorage.setItem('fhmc-users-baowen', JSON.stringify(users)); break; } }
+    document.getElementById('profile-invite-msg').textContent = '邀请成功！双方各得3天'; document.getElementById('profile-invite-msg').style.color = '#059669';
+    document.getElementById('invite-section').style.display = 'none';
+    renderProfile(); updateUserStatus(); checkAndShow();
+  }
+}
+
+function saveCurrentUser(user){
+  localStorage.setItem('fhmc-current-user', JSON.stringify(user));
+}
+
+function activateFromProfile(){
+  var code = document.getElementById('profile-auth-code').value.trim().toUpperCase();
+  if(!code){ document.getElementById('profile-auth-msg').textContent = '请输入授权码'; document.getElementById('profile-auth-msg').style.color = '#dc2626'; return; }
+  var days = verifyAuthCode(code);
+  if(!days){ document.getElementById('profile-auth-msg').textContent = '授权码无效，请检查'; document.getElementById('profile-auth-msg').style.color = '#dc2626'; return; }
+  var result = activateAuthCode(code);
+  if(result.ok){
+    document.getElementById('profile-auth-msg').textContent = result.msg;
+    document.getElementById('profile-auth-msg').style.color = '#059669';
+    document.getElementById('profile-auth-code').value = '';
+    setTimeout(function(){ renderProfile(); updateUserStatus(); checkAndShow(); }, 800);
+  } else {
+    document.getElementById('profile-auth-msg').textContent = result.msg;
+    document.getElementById('profile-auth-msg').style.color = '#dc2626';
+  }
+}
+
+function copyQQ(){
+  navigator.clipboard.writeText('3104880265').then(function(){
+    showToast('QQ号 3104880265 已复制！');
+  });
+}
+
+function changePassword(){
+  var oldPwd = document.getElementById('pwd-old').value;
+  var newPwd = document.getElementById('pwd-new').value;
+  if(!oldPwd || !newPwd){ document.getElementById('pwd-msg').textContent = '请输入当前密码和新密码'; document.getElementById('pwd-msg').style.color = '#dc2626'; return; }
+  if(newPwd.length < 4){ document.getElementById('pwd-msg').textContent = '新密码至少4位'; document.getElementById('pwd-msg').style.color = '#dc2626'; return; }
+  var user = getCurrentUser();
+  if(!user){ document.getElementById('pwd-msg').textContent = '请先登录'; return; }
+  var users = JSON.parse(localStorage.getItem('fhmc-users-baowen') || '[]');
+  for(var i=0;i<users.length;i++){
+    if(users[i].username === user.username && users[i].password === sha256(oldPwd)){
+      users[i].password = sha256(newPwd); user.password = sha256(newPwd);
+      localStorage.setItem('fhmc-users-baowen', JSON.stringify(users));
+      saveCurrentUser(user);
+      document.getElementById('pwd-msg').textContent = '密码修改成功！'; document.getElementById('pwd-msg').style.color = '#059669';
+      document.getElementById('pwd-old').value = ''; document.getElementById('pwd-new').value = '';
+      return;
+    }
+  }
+  document.getElementById('pwd-msg').textContent = '当前密码不正确'; document.getElementById('pwd-msg').style.color = '#dc2626';
+}
+
+function showPage(id){
+  var pages = document.querySelectorAll('.page');
+  for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
+  var navs = document.querySelectorAll('.nav-item');
+  for(var i=0;i<navs.length;i++) navs[i].classList.remove('active');
+  var target = document.getElementById('page-'+id);
+  if(target) target.classList.add('active');
+  var nav = document.querySelector('[data-page="'+id+'"]');
+  if(nav) nav.classList.add('active');
+}
+
+function onProviderChange(){
+  var p = document.getElementById('provider').value;
+  var providers = {
+    ollama:{url:'',model:'qwen3.6:35b-a3b-q4_K_M'},
+    openai:{url:'https://api.openai.com/v1',model:'gpt-4o'},
+    qwen:{url:'https://dashscope.aliyuncs.com/compatible-mode/v1',model:'qwen3-72b'},
+    deepseek:{url:'https://api.deepseek.com/v1',model:'deepseek-chat'},
+    custom:{url:'',model:''}
+  };
+  if(!p || !providers[p]) return;
+  if(providers[p].url) document.getElementById('ollamaUrl').value = providers[p].url;
+  if(providers[p].model) document.getElementById('ollamaModelManual').value = providers[p].model;
+}
+
+function getConfig(prefix){
+  var url = document.getElementById('ollamaUrl').value.trim();
+  if(!url) url = localStorage.getItem(prefix+'url') || '';
+  url = url.replace(/\/$/,'');
+  var apiKey = document.getElementById('apiKey') ? document.getElementById('apiKey').value.trim() : '';
+  if(!apiKey) apiKey = localStorage.getItem(prefix+'key') || '';
+  var provider = document.getElementById('provider') ? document.getElementById('provider').value : '';
+  if(!provider) provider = localStorage.getItem(prefix+'provider') || '';
+  var modelManual = document.getElementById('ollamaModelManual') ? document.getElementById('ollamaModelManual').value.trim() : '';
+  var modelSelect = document.getElementById('ollamaModel') ? document.getElementById('ollamaModel').value : '';
+  var model = modelManual || modelSelect || '';
+  var isOpenAI = url.indexOf('/v1') !== -1 || provider === 'openai' || provider === 'qwen' || provider === 'deepseek';
+  return {url:url, apiKey:apiKey, isOpenAI:isOpenAI, provider:provider, model:model};
+}
+
+function makeHeaders(apiKey){
+  var h = {'Content-Type':'application/json'};
+  if(apiKey) h['Authorization'] = 'Bearer ' + apiKey;
+  return h;
+}
+
+function joinUrl(base, path){
+  var clean = base.replace(/\/$/,'');
+  if(clean.lastIndexOf(path) === clean.length - path.length) return clean;
+  return clean + path;
+}
+
+async function callAPI(sysPrompt, userPrompt, onStream, temp, prefix){
+  var cfg = getConfig(prefix);
+  if(!cfg.url) throw new Error('请先设置API地址');
+  if(!cfg.model) throw new Error('请填写主模型名称');
+  var headers = makeHeaders(cfg.apiKey);
+  var apiUrl, body;
+  if(cfg.isOpenAI){
+    apiUrl = joinUrl(cfg.url, '/chat/completions');
+    body = JSON.stringify({model:cfg.model, messages:[{role:'system',content:sysPrompt},{role:'user',content:userPrompt}], stream:true, temperature:temp});
+  } else {
+    apiUrl = joinUrl(cfg.url, '/api/generate');
+    body = JSON.stringify({model:cfg.model, system:sysPrompt, prompt:userPrompt, stream:true, options:{temperature:temp}});
+  }
+  var response = await fetch(apiUrl, {method:'POST', headers:headers, body:body});
+  if(!response.ok){
+    var errText = await response.text().catch(function(){return '';});
+    var errDetail = errText;
+    try{ var j = JSON.parse(errText); errDetail = j.error && j.error.message || j.detail || j.message || errText; }catch(e){}
+    throw new Error('HTTP ' + response.status + ': ' + (errDetail || '未知错误').slice(0,300));
+  }
+  if(!response.body) throw new Error('No response body');
+  var reader = response.body.getReader();
+  var decoder = new TextDecoder();
+  var fullText = '';
+  var buffer = '';
+  while(true){
+    var chunk = await reader.read();
+    if(chunk.done) break;
+    var decoded = decoder.decode(chunk.value, {stream:true});
+    buffer += decoded;
+    var lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+    for(var i=0;i<lines.length;i++){
+      var line = lines[i].trim();
+      if(!line) continue;
+      if(cfg.isOpenAI && line.indexOf('data:') === 0){
+        var jsonStr = line.slice(5).trim();
+        if(jsonStr === '[DONE]') return fullText;
+        try{
+          var data = JSON.parse(jsonStr);
+          if(data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+          var content = data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content;
+          if(content){ fullText += content; if(onStream) onStream(fullText); }
+          if(data.choices && data.choices[0] && data.choices[0].finish_reason) return fullText;
+        }catch(e){}
+      } else {
+        try{
+          var data = JSON.parse(line);
+          if(data.error) throw new Error(data.error.message || data.error);
+          if(data.response){ fullText += data.response; if(onStream) onStream(fullText); }
+          if(data.done) return fullText;
+        }catch(e){}
+      }
+    }
+  }
+  if(buffer.trim()){
+    try{ var data = JSON.parse(buffer.trim()); if(data.response) fullText += data.response; }catch(e){}
+  }
+  return fullText;
+}
+
+
+
+function renderMarkdown(text){
+  var html = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  html = html.replace(/^#### (.*$)/gim, '<h3 style="font-size:14px;font-weight:600;margin:12px 0 8px">$1</h3>');
+  html = html.replace(/^### (.*$)/gim, '<h2 style="font-size:16px;font-weight:600;margin:14px 0 10px;color:#374151">$1</h2>');
+  html = html.replace(/^## (.*$)/gim, '<h2 style="font-size:16px;font-weight:600;margin:14px 0 10px;color:#374151;border-bottom:1px solid #e5e5e5;padding-bottom:6px">$1</h2>');
+  html = html.replace(/^# (.*$)/gim, '<h1 style="font-size:20px;font-weight:700;margin:16px 0 12px;border-bottom:2px solid #059669;padding-bottom:8px">$1</h1>');
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  html = html.replace(/^&gt; (.*$)/gim, '<blockquote style="border-left:3px solid #059669;margin:10px 0;padding:8px 16px;background:#fafaf9;color:#4b5563">$1</blockquote>');
+  html = html.replace(/^---$/gim, '<hr style="border:none;border-top:1px solid #e5e5e5;margin:12px 0">');
+  html = html.replace(/`([^`]+)`/g, '<code style="background:#f5f5f4;padding:2px 4px;border-radius:3px;font-size:12px">$1</code>');
+  html = html.replace(/^\* (.*$)/gim, '<ul style="margin:8px 0 8px 24px"><li>$1</li></ul>');
+  html = html.replace(/^- (.*$)/gim, '<ul style="margin:8px 0 8px 24px"><li>$1</li></ul>');
+  html = html.replace(/^\d+\. (.*$)/gim, '<ol style="margin:8px 0 8px 24px"><li>$1</li></ol>');
+  html = html.replace(/\n\n/g, '</p><p>');
+  html = html.replace(/\n/g, '<br>');
+  return '<p>' + html + '</p>';
+}
+
+function showResult(type, text){
+  document.getElementById('result-card-'+type).style.display = 'block';
+  document.getElementById('status-bar-'+type).innerHTML = '<span class="spinner"></span> ' + text;
+  document.getElementById('output-'+type).innerHTML = '';
+}
+function updateOutput(type, text){
+  document.getElementById('output-'+type).innerHTML = renderMarkdown(text);
+  currentOutput[type] = text;
+}
+function updateStatus(type, text, color){
+  var cls = color === 'green' ? 'badge-green' : color === 'red' ? 'badge-red' : 'badge-yellow';
+  document.getElementById('status-bar-'+type).innerHTML = '<span class="badge '+cls+'">'+text+'</span>';
+}
+async function copyRichText(html, text){
+  try{
+    if(navigator.clipboard.write && typeof ClipboardItem !== 'undefined'){
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html': new Blob([html], {type:'text/html'}),
+          'text/plain': new Blob([text], {type:'text/plain'})
+        })
+      ]);
+    } else { await navigator.clipboard.writeText(text); }
+  }catch(e){ await navigator.clipboard.writeText(text); }
+}
+
+function copyOutput(type){
+  var text = currentOutput[type] || '';
+  if(!text) { showToast('没有内容'); return; }
+  var html = document.getElementById('output-'+type).innerHTML;
+  copyRichText('<div style="font-family:system-ui,-apple-system,sans-serif;line-height:1.8;font-size:16px;color:#333">'+html+'</div>', text);
+  showToast('已复制（含格式）');
+}
+
+function saveOutput(type, format){
+  var text = currentOutput[type] || '';
+  if(!text) { showToast('没有内容'); return; }
+  var prefix = '写文';
+  var date = new Date().toISOString().slice(0,10);
+  var blob, filename;
+  if(format === 'doc'){
+    var css = '<style>body{font-family:\'宋体\',SimSun,serif;font-size:12pt;line-height:1.8;max-width:210mm;margin:20mm auto;padding:0 15mm}h1{font-size:18pt;font-weight:bold;text-align:center;margin:24pt 0;border-bottom:2pt solid #d97706;padding-bottom:8pt}h2{font-size:14pt;font-weight:bold;margin:18pt 0 12pt;border-bottom:1pt solid #ccc;padding-bottom:4pt}blockquote{border-left:3pt solid #d97706;margin:12pt 0;padding:8pt 16pt;background:#fafaf9}hr{border:none;border-top:1pt solid #ddd;margin:16pt 0}p{margin:8pt 0;text-indent:2em}strong{font-weight:bold}</style>';
+    var html = '<!DOCTYPE html><html><head><meta charset="utf-8">'+css+'</head><bo'+'dy>'+(text)+'</bo'+'dy></html>';
+    blob = new Blob([html], {type:'application/msword;charset=utf-8'});
+    filename = prefix + '_' + date + '.doc';
+  } else if(format === 'md'){
+    blob = new Blob([text], {type:'text/markdown;charset=utf-8'});
+    filename = prefix + '_' + date + '.md';
+  } else {
+    blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+    filename = prefix + '_' + date + '.txt';
+  }
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('已保存 ' + filename);
+}
+
+function shareTo(platform){
+  var text = currentOutput['article'] || '';
+  if(!text){ showToast('没有内容可分享'); return; }
+  var html = document.getElementById('output-article').innerHTML;
+  // 先同步打开窗口（避免浏览器拦截），再复制内容
+  var urls = {
+    toutiao: 'https://mp.toutiao.com/profile_v4/graphic/publish',
+    baijiahao: 'https://baijiahao.baidu.com/builder/rc/edit',
+    weixin: 'https://mp.weixin.qq.com/',
+    zhihu: 'https://zhuanlan.zhihu.com/write',
+    douyin: 'https://creator.douyin.com/creator-micro/content/upload',
+    xiaohongshu: 'https://creator.xiaohongshu.com/publish/publish'
+  };
+  var url = urls[platform] || '';
+  if(url) window.open(url, '_blank', 'noopener,noreferrer');
+  copyRichText('<div style="font-family:system-ui,-apple-system,sans-serif;line-height:1.8;font-size:16px;color:#333">'+html+'</div>', text);
+  showToast('格式内容已复制！粘贴到平台即可保留排版');
+}
+
+function saveAndClose(type, fmt){
+  var d = document.getElementById('save-details-'+type);
+  if(d) d.open = false;
+  saveOutput(type, fmt);
+}
+
+function showToast(msg){
+  var t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 3000);
+}
+
+async function testConnection(prefix){
+  var resultEl = document.getElementById('test-result');
+  var cfg = getConfig(prefix);
+  if(!cfg.url) { resultEl.innerHTML = '<span class="badge badge-red">请先填写API地址</span>'; return; }
+  resultEl.innerHTML = '<span class="spinner"></span> 检测中...';
+  try{
+    var ctrl = new AbortController();
+    setTimeout(function(){ ctrl.abort(); }, 8000);
+    var headers = makeHeaders(cfg.apiKey);
+    var testUrl = cfg.isOpenAI ? joinUrl(cfg.url, '/models') : joinUrl(cfg.url, '/api/tags');
+    var resp = await fetch(testUrl, {method:'GET', headers:headers, signal:ctrl.signal});
+    if(resp.ok){
+      var data = await resp.json();
+      var models = [];
+      if(cfg.isOpenAI) models = (data.data || []).map(function(m){return m.id;});
+      else models = (data.models || []).map(function(m){return m.name || m.model;});
+      if(models.length === 0){ resultEl.innerHTML = '<span class="badge badge-yellow">连接正常但未获取模型</span>'; return; }
+      var saved = localStorage.getItem(prefix+'model') || '';
+      var opts = '<option value="">-- 可选 --</option>';
+      for(var i=0;i<models.length;i++){
+        opts += '<option value="' + models[i] + '"' + (models[i] === saved ? ' selected' : '') + '>' + models[i] + '</option>';
+      }
+      document.getElementById('ollamaModel').innerHTML = opts;
+      if(!document.getElementById('ollamaModelManual').value && models.length > 0){
+        document.getElementById('ollamaModelManual').value = models[0];
+      }
+      resultEl.innerHTML = '<span class="badge badge-green">正常 &middot; ' + models.length + '个模型</span>';
+    } else {
+      var txt = await resp.text().catch(function(){return '';});
+      resultEl.innerHTML = '<span class="badge badge-red">HTTP ' + resp.status + '</span>';
+    }
+  }catch(e){
+    resultEl.innerHTML = '<span class="badge badge-red">' + (e.name === 'AbortError' ? '超时' : e.message) + '</span>';
+  }
+}
+
+function saveSettings(prefix, extras){
+  localStorage.setItem(prefix+'provider', document.getElementById('provider').value);
+  localStorage.setItem(prefix+'url', document.getElementById('ollamaUrl').value.trim());
+  localStorage.setItem(prefix+'key', document.getElementById('apiKey').value.trim());
+  localStorage.setItem(prefix+'model', document.getElementById('ollamaModelManual').value.trim());
+  if(extras) for(var i=0;i<extras.length;i++){
+    localStorage.setItem(prefix+extras[i].id, document.getElementById(extras[i].id).value);
+  }
+  showToast('设置已保存');
+}
+
+function resetSettings(prefix, extras){
+  document.getElementById('provider').value = '';
+  document.getElementById('ollamaUrl').value = '';
+  document.getElementById('apiKey').value = '';
+  document.getElementById('ollamaModelManual').value = '';
+  document.getElementById('ollamaModel').innerHTML = '<option value="">-- 可选 --</option>';
+  var keys = ['provider','url','key','model'];
+  for(var i=0;i<keys.length;i++) localStorage.removeItem(prefix+keys[i]);
+  if(extras) for(var i=0;i<extras.length;i++){
+    document.getElementById(extras[i].id).value = extras[i].default;
+    localStorage.removeItem(prefix+extras[i].id);
+  }
+  showToast('已重置');
+}
+
+function loadSettings(prefix, extras){
+  var p = localStorage.getItem(prefix+'provider');
+  if(p) document.getElementById('provider').value = p;
+  var u = localStorage.getItem(prefix+'url');
+  if(u) document.getElementById('ollamaUrl').value = u;
+  var k = localStorage.getItem(prefix+'key');
+  if(k) document.getElementById('apiKey').value = k;
+  var m = localStorage.getItem(prefix+'model');
+  if(m) document.getElementById('ollamaModelManual').value = m;
+  if(extras) for(var i=0;i<extras.length;i++){
+    var v = localStorage.getItem(prefix+extras[i].id);
+    if(v) document.getElementById(extras[i].id).value = v;
+  }
+}
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+
+loadSettings('fhmc-bw-', [{id:'tempArticle', default:'0.7'}]);
+checkAndShow();
+updateShareLink();
+updateUserStatus();
+updateShareLink();
+checkUrlInvite();
+checkAndShow();
+updateUserStatus();
+</script></body></html>
