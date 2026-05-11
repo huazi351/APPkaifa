@@ -1,0 +1,29 @@
+{
+  "name": "小树屋AI",
+  "short_name": "小树屋AI",
+  "description": "全网热点爆文智能生成平台",
+  "start_url": "/baowen/index.html",
+  "display": "standalone",
+  "background_color": "#fafaf9",
+  "theme_color": "#059669",
+  "orientation": "portrait-primary",
+  "scope": "/baowen/",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "productivity"
+  ],
+  "lang": "zh-CN"
+}
