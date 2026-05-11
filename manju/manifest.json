@@ -1,0 +1,29 @@
+{
+  "name": "漫创AI",
+  "short_name": "漫创AI",
+  "description": "国风仙侠漫剧智能制作平台",
+  "start_url": "/manju/index.html",
+  "display": "standalone",
+  "background_color": "#fafaf9",
+  "theme_color": "#dc2626",
+  "orientation": "portrait-primary",
+  "scope": "/manju/",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "productivity"
+  ],
+  "lang": "zh-CN"
+}
